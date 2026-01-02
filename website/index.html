@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIVA - Fashion Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="init()">
+
+    <header>
+        <div class="logo" onclick="router('home')">DIVA</div>
+        <div class="nav-links">
+            <div id="user-display" style="display: none; font-size: 0.9rem;">Hi, Anusha</div>
+            <button id="auth-btn" class="auth-btn" onclick="router('login')">Login</button>
+            <button class="feedback-btn" onclick="router('feedback')">Feedback</button>
+            <div class="cart-icon" onclick="router('cart')">
+                <span style="font-size: 1.4rem;">🛍️</span>
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="toast">Item added to cart!</div>
+
+    <div id="login-page" class="page active">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <h2>Welcome Back</h2>
+                <p>Login to discover the latest fashion</p>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="user@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="checkout-btn">LOGIN</button>
+                    <p style="margin-top: 15px; font-size: 0.8rem;">New here? Create account</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-page" class="page">
+        <div class="container">
+            <div class="hero">
+                <h1>Diva Collection</h1>
+                <p>Bring out your unique style with thoughtfully crafted outfits.</p>
+                <button class="hero-btn" onclick="document.getElementById('product-list').scrollIntoView({behavior: 'smooth'})">SHOP NOW</button>
+            </div>
+
+            <div class="section-title">Trending Dresses</div>
+
+            <div id="category-filter" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            </div>
+            <div class="product-grid" id="product-list">
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-page" class="page">
+        <div class="container">
+            <h2 class="section-title">My Shopping Bag</h2>
+            <div class="cart-layout">
+                <div class="cart-list" id="cart-items-container">
+                </div>
+                
+                <div class="cart-summary">
+                    <h3 style="margin-bottom: 20px;">Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal">₹0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping Estimate</span>
+                        <span style="color: green;">FREE</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (5%)</span>
+                        <span id="tax">₹0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Order Total</span>
+                        <span id="final-total" style="color: var(--primary);">₹0</span>
+                    </div>
+                    <button class="checkout-btn" onclick="router('payment')">PROCEED TO CHECKOUT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-page" class="page">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center;">Secure Payment</h2>
+            <div class="payment-card">
+                <p style="margin-bottom: 20px;">Choose payment method for <b id="pay-amount">₹0</b></p>
+                
+                <label class="pay-option">
+                    <input type="radio" name="payment" value="upi" checked>
+                    <div>
+                        <strong>UPI / Wallets</strong><br>
+                        <small>GooglePay, PhonePe, Paytm</small>
+                    </div>
+                </label>
+
+                <label class="pay-option">
+                    <input type="radio" name="payment" value="card">
+                    <div>
+                        <strong>Credit / Debit Card</strong><br>
+                        <small>Visa, Mastercard, Rupay</small>
+                    </div>
+                </label>
+
+                <label class="pay-option">
+                    <input type="radio" name="payment" value="cod">
+                    <div>
+                        <strong>Cash on Delivery</strong><br>
+                        <small>Pay at your doorstep</small>
+                    </div>
+                </label>
+
+                <button class="checkout-btn" onclick="processPayment()">PAY SECURELY</button>
+                <button onclick="router('cart')" style="width: 100%; background: transparent; border: none; margin-top: 10px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback-page" class="page">
+        <div class="container">
+            <div class="feedback-card">
+                <h2>We Value Your Feedback</h2>
+                <p>Help us improve your shopping experience. Share your thoughts!</p>
+                
+                <form onsubmit="submitFeedback(event)" id="feedback-form">
+                    <div class="form-group">
+                        <label for="feedback-name">Full Name *</label>
+                        <input type="text" id="feedback-name" placeholder="Enter your name" required>
+                        <span class="error-message" id="name-error">Name must be at least 2 characters</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-email">Email Address *</label>
+                        <input type="email" id="feedback-email" placeholder="your.email@example.com" required>
+                        <span class="error-message" id="email-error">Please enter a valid email address</span>
+                    </div>
+                     
+                     <div class="form-group">
+                        <label for="feedback-PhNo">Email Address *</label>
+                        <input type="text" id="feedback-phone" placeholder="Mobile Number" required>
+                       <span id="phone-error" id="error">Enter valid 10-digit number</span>
+                       </div>
+
+                    <div class="rating-section">
+                        <label>Overall Experience *</label>
+                        <div class="star-rating-feedback" id="feedback-star-rating">
+                            <span data-rating="1">☆</span><span data-rating="2">☆</span><span data-rating="3">☆</span><span data-rating="4">☆</span><span data-rating="5">☆</span>
+                        </div>
+                        <input type="hidden" id="feedback-rating" value="0" required>
+                        <span class="error-message" id="rating-error">Please select a rating</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-category">Feedback Category *</label>
+                        <select id="feedback-category" required>
+                            <option value="">Select a category</option>
+                            <option value="Product Quality">Product Quality</option>
+                            <option value="Customer Service">Customer Service</option>
+                            <option value="Website Experience">Website Experience</option>
+                            <option value="Delivery">Delivery</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span class="error-message" id="category-error">Please select a category</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-comment">Your Feedback *</label>
+                        <textarea id="feedback-comment" rows="4" placeholder="Tell us about your experience..." required></textarea>
+                        <span class="error-message" id="comment-error">Feedback must be at least 10 characters</span>
+                    </div>
+
+                    <button type="submit" class="checkout-btn">Submit Feedback</button>
+                    <button type="button" onclick="router('home')" style="width: 100%; background: transparent; border: 1px solid #ddd; margin-top: 10px; cursor: pointer; padding: 12px; border-radius: 8px;">Back to Home</button>
+                </form>
+
+                <div class="feedback-list" id="feedback-list-section">
+                    <h3>Recent Feedback (<span id="feedback-count">0</span>)</h3>
+                    <div id="feedback-list-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="review-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal(event)">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 5px;">Product Reviews</h2>
+            <p style="margin-bottom: 20px;" id="modal-product-name"></p>
+
+            <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Write a Review</h3>
+            <form onsubmit="submitReview(event)">
+                <input type="hidden" id="review-product-id">
+                
+                <label class="star-rating-form" id="star-rating-input">
+                    <span data-rating="1">☆</span><span data-rating="2">☆</span><span data-rating="3">☆</span><span data-rating="4">☆</span><span data-rating="5">☆</span>
+                </label>
+                <input type="hidden" id="review-rating" value="0" required>
+
+                <div class="form-group">
+                    <label for="review-comment">Your Thoughts:</label>
+                    <textarea id="review-comment" rows="3" placeholder="Tell us what you liked or disliked..." required></textarea>
+                </div>
+
+                <button type="submit" class="checkout-btn">Submit Review</button>
+            </form>
+            
+            <h3 style="font-size: 1.2rem; margin-top: 30px; margin-bottom: 10px;">Customer Reviews (<span id="review-count">0</span>)</h3>
+            <div id="reviews-list-container" class="review-list">
+            </div>
+        </div>
+    </div>
+
+    <div id="product-detail-modal" class="product-detail-modal" onclick="closeProductDetail(event)">
+        <div class="product-detail-content" onclick="event.stopPropagation()">
+            <div class="product-detail-image">
+                <img id="detail-product-img" src="" alt="">
+            </div>
+            <div class="product-detail-info">
+                <span class="close-btn" onclick="closeProductDetail(event)">&times;</span>
+                
+                <div class="product-detail-header">
+                    <div class="product-detail-category" id="detail-product-category"></div>
+                    <h2 class="product-detail-name" id="detail-product-name"></h2>
+                    <div class="product-detail-price" id="detail-product-price"></div>
+                    <div class="product-detail-rating">
+                        <span id="detail-product-rating" class="product-rating">★ 0.0</span>
+                        <a class="review-link" id="detail-review-link">See Reviews</a>
+                    </div>
+                </div>
+
+                <div class="size-selector">
+                    <h3>Select Size</h3>
+                    <div class="size-options" id="size-options">
+                        <button class="size-option" onclick="selectSize(this, 'XS')">XS</button>
+                        <button class="size-option" onclick="selectSize(this, 'S')">S</button>
+                        <button class="size-option selected" onclick="selectSize(this, 'M')">M</button>
+                        <button class="size-option" onclick="selectSize(this, 'L')">L</button>
+                        <button class="size-option" onclick="selectSize(this, 'XL')">XL</button>
+                        <button class="size-option" onclick="selectSize(this, 'XXL')">XXL</button>
+                    </div>
+                </div>
+
+                <div class="product-highlights" id="detail-highlights">
+                    <h3>Product Highlights</h3>
+                    <ul id="highlights-list"></ul>
+                </div>
+
+                <div class="delivery-info">
+                    <h3>🚚 Delivery Information</h3>
+                    <p><strong>Free Delivery</strong> on orders above ₹999</p>
+                    <p><strong>Standard Delivery:</strong> 4-6 business days</p>
+                    <p><strong>Express Delivery:</strong> 2-3 business days (₹99 extra)</p>
+                    <p><strong>Easy Returns:</strong> 7-day return & exchange policy</p>
+                    <p><strong>Cash on Delivery:</strong> Available</p>
+                </div>
+
+                <div class="product-actions">
+                    <button class="add-to-cart-detail" id="detail-add-cart">ADD TO CART</button>
+                    <button class="buy-now-btn" id="detail-buy-now">BUY NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About DIVA</h3>
+                    <p class="footer-description">
+                        DIVA is your ultimate destination for trendy and elegant fashion. We bring you the finest collection of ethnic wear, party dresses, and casual outfits curated for every occasion.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" title="Facebook">📘</a>
+                        <a href="#" class="social-icon" title="Instagram">📷</a>
+                        <a href="#" class="social-icon" title="Twitter">🐦</a>
+                        <a href="#" class="social-icon" title="Pinterest">📌</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="#">Return & Exchange</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Shop</h3>
+                    <ul>
+                        <li><a href="#">Ethnic Wear</a></li>
+                        <li><a href="#">Party Dresses</a></li>
+                        <li><a href="#">Casual Collection</a></li>
+                        <li><a href="#">Summer Special</a></li>
+                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="#">Sale & Offers</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Policies</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a href="#">Payment Security</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span>📞</span>
+                            <span>+91 9876543210</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>✉️</span>
+                            <span>support@diva.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>📍</span>
+                            <span>Bangalore, Karnataka</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>🕒</span>
+                            <span>Mon-Sat: 9AM - 7PM</span>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; color: #b3b3b3; font-size: 0.85rem;">
+                        🔒 100% Secure Payments<br>
+                        🚚 Free Shipping on orders above ₹999
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 DIVA Fashion Store. All Rights Reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Sitemap</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Press</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
