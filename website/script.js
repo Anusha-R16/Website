@@ -735,7 +735,7 @@ function submitReview(e) {
         user: userName,
         rating: rating,
         comment: comment,
-        date: new Date().toISOString().slice(0, 10)
+        date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-')
     };
 
     if (!reviews[productId]) {
