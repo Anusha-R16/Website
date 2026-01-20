@@ -193,105 +193,105 @@ let currentProductId = null;
 // Mock reviews data
 let reviews = {
     1: [
-        { user: "Priya", rating: 4, comment: "Absolutely stunning saree! The fabric is so soft.", date: "16-2-2024" },
-        { user: "Neha", rating: 4, comment: "Loved this cotton saree! The design is simple and classy. Perfect for office and casual occasions.", date: "26-8-2024" },
-        { user: "Aisha", rating: 5, comment: "Nice cotton saree with good quality material. It feels light and breathable, suitable for long hours.", date: "11-4-2025" }
+        { user: "Priya", rating: 4, comment: "Absolutely stunning saree! The fabric is so soft.", date: "11-04-2025" },
+        { user: "Neha", rating: 4, comment: "Loved this cotton saree! The design is simple and classy. Perfect for office and casual occasions.", date: "26-08-2024" },
+        { user: "Aisha", rating: 5, comment: "Nice cotton saree with good quality material. It feels light and breathable, suitable for long hours.", date: "16-02-2024" }
     ],
     2: [
-        { user: "Sanjana", rating: 5, comment: "The fit of the Anarkali dress is perfect, looks even better in person.", date: "20-1-2024" },
-        { user: "Ananya", rating: 4, comment: "I loved this red Anarkali! The stitching and detailing are very neat. It makes you look elegant and confident. Totally worth the price.", date: "11-8-2024"},
-        { user: "Kavya", rating: 5, comment: "The dress is very pretty and eye-catching. The red shade is vibrant and suits Indian occasions well. Slightly long for me, but overall a great buy.", date: "25-4-2025" },           
-        { user: "Rashmi", rating: 4, comment: "An excellent Anarkali dress for weddings or special occasions. The color, flare, and overall finish are amazing. I received many compliments wearing it", date: "16-9-2025" }
+        { user: "Sanjana", rating: 5, comment: "The fit of the Anarkali dress is perfect, looks even better in person.", date: "16-09-2025" },
+        { user: "Ananya", rating: 4, comment: "I loved this red Anarkali! The stitching and detailing are very neat. It makes you look elegant and confident. Totally worth the price.", date: "25-04-2025"},
+        { user: "Kavya", rating: 5, comment: "The dress is very pretty and eye-catching. The red shade is vibrant and suits Indian occasions well. Slightly long for me, but overall a great buy.", date: "11-08-2024" },           
+        { user: "Rashmi", rating: 4, comment: "An excellent Anarkali dress for weddings or special occasions. The color, flare, and overall finish are amazing. I received many compliments wearing it", date: "01-05-2024" }
     ],
     3: [
-        { user: "Meera K", rating: 4, comment: "Beautiful Lehanga, slightly heavy but worth it for the party look.", date: "20-11-2024" },
-        { user: "Vijay D", rating: 5, comment: "Bought for my sister, the embroidery is exquisite.", date: "18-5-2025" },
-        { user: "Lavanya", rating: 5, comment: "Perfect lehenga for special occasions. The finishing is excellent and it looks exactly like the pictures.", date: "19-8-2025" }
+        { user: "Meera K", rating: 4, comment: "Beautiful Lehanga, slightly heavy but worth it for the party look.", date: "19-08-2025" },
+        { user: "Vijay D", rating: 5, comment: "Bought for my sister, the embroidery is exquisite.", date: "18-05-2025" },
+        { user: "Lavanya", rating: 5, comment: "Perfect lehenga for special occasions. The finishing is excellent and it looks exactly like the pictures.", date: "20-11-2024" }
     ],
     4: [
-        { user: "Isha", rating: 4, comment: "This floral summer gown is light, breathable, and perfect for hot weather.", date: "11-4-2024" },
-        { user: "Aadhya", rating: 5,comment: "Perfect for a summer day. Very comfortable.", date: "24-8-2024" }
+        { user: "Isha", rating: 4, comment: "This floral summer gown is light, breathable, and perfect for hot weather.", date: "24-08-2025" },
+        { user: "Aadhya", rating: 5,comment: "Perfect for a summer day. Very comfortable.", date: "11-04-2024" }
     ],
     5: [
-        { user: "Meera K", rating: 4, comment: "Beautiful Lehanga, slightly heavy but worth it for the party look.", date: "20-11-2024" },
-        { user: "Vijay D", rating: 5, comment: "Bought for my sister, the embroidery is exquisite.", date: "18-5-2025" },
-        { user: "Lavanya", rating: 5, comment: "Perfect lehenga for special occasions. The finishing is excellent and it looks exactly like the pictures.", date: "19-8-2025" }
+        { user: "Meera K", rating: 4, comment: "Beautiful Lehanga, slightly heavy but worth it for the party look.", date: "19-08-2025" },
+        { user: "Vijay D", rating: 5, comment: "Bought for my sister, the embroidery is exquisite.", date: "18-05-2025" },
+        { user: "Lavanya", rating: 5, comment: "Perfect lehenga for special occasions. The finishing is excellent and it looks exactly like the pictures.", date: "20-11-2024" }
     ],
     6: [
-        { user: "Ritu S", rating: 5, comment: "My daughter loves the Yellow Sunshine Frock! True to size.", date: "17-2-2024" },
-        { user: "Pooja", rating: 4, comment: "Great choice for casual outings and daytime events.", date: "4-6-2024" },
+        { user: "Ritu S", rating: 5, comment: "My daughter loves the Yellow Sunshine Frock! True to size.", date: "30-06-2025" },
+        { user: "Pooja", rating: 4, comment: "Great choice for casual outings and daytime events.", date: "11-03-2025" },
         { user: "Sneha", rating: 5, comment: "Bright yellow color gives a cheerful and lively look.", date: "28-11-2024" },
-        { user: "Diya", rating: 5, comment: "Very comfortable and perfect for summer days.", date: "11-3-2025" },
-        { user: "Meera", rating: 4, comment: "Perfect for a summer day. Very comfortable.", date: "30-6-2025" }
+        { user: "Diya", rating: 5, comment: "Very comfortable and perfect for summer days.", date: "04-06-2024" },
+        { user: "Meera", rating: 4, comment: "Perfect for a summer day. Very comfortable.", date: "17-02-2024" }
     ],
     7: [
-        { user: "Sanya", rating: 4, comment: "Timeless pattern that never goes out of fashion.", date: "16-4-2024" },
-        { user: "Shreya", rating: 5, comment: "Classic polka dot design with a modern touch.", date: "18-5-2025" },
-        { user: "Riya", rating: 5, comment: "Comfortable dress suitable for daily wear.", date: "13-1-2025" }
+        { user: "Sanya", rating: 4, comment: "Timeless pattern that never goes out of fashion.", date: "25-08-2025" },
+        { user: "Shreya", rating: 5, comment: "Classic polka dot design with a modern touch.", date: "18-08-2024" },
+        { user: "Riya", rating: 5, comment: "Comfortable dress suitable for daily wear.", date: "13-01-2024" }
     ],
     8: [
-        { user: "Tanvi", rating: 5, comment: "Stylish maxi dress with a relaxed boho look.", date: "22-9-2024" },
-        { user: "Neha", rating: 4, comment: "Perfect for vacations and casual gatherings.", date: "16-6-2025" },
-        { user: "Priya", rating: 5, comment: "Comfortable and trendy at the same time.", date: "7-10-2025" }
+        { user: "Tanvi", rating: 5, comment: "Stylish maxi dress with a relaxed boho look.", date: "07-10-2025" },
+        { user: "Neha", rating: 4, comment: "Perfect for vacations and casual gatherings.", date: "16-06-2025" },
+        { user: "Priya", rating: 5, comment: "Comfortable and trendy at the same time.", date: "22-09-2024" }
     ],
     9: [
-        { user: "Khushi", rating: 5, comment: "Keeps you warm and comfortable during winter.", date: "20-11-2024" },
-        { user: "Aarohi", rating: 5, comment: "Looks elegant while providing good warmth.", date: "18-11-2025" }
+        { user: "Khushi", rating: 5, comment: "Keeps you warm and comfortable during winter.", date: "20-11-2025" },
+        { user: "Aarohi", rating: 5, comment: "Looks elegant while providing good warmth.", date: "18-10-2024" }
     ],
     10: [
-        { user: "Mounika", rating: 5, comment: "Makes the bride look graceful and classy.", date: "2-6-2024" },
+        { user: "Mounika", rating: 5, comment: "Makes the bride look graceful and classy.", date: "29-08-2025" },
         { user: "Aarya", rating: 4, comment: "High-quality fabric with lovely detailing.", date: "18-10-2024" },
-        { user: "Avni", rating: 4, comment: "Truly a dream wedding outfit.", date: "29-8-2025" }
+        { user: "Avni", rating: 4, comment: "Truly a dream wedding outfit.", date: "02-06-2024" }
     ],
     11: [
-        { user: "Vanya", rating: 4, comment: "Trendy crop top suitable for modern styling.", date: "15-6-2025" },
-        { user: "Ankika", rating: 5, comment: "Easy to pair with jeans, skirts, or trousers.", date: "25-10-2025" }
+        { user: "Vanya", rating: 4, comment: "Trendy crop top suitable for modern styling.", date: "15-10-2025" },
+        { user: "Ankika", rating: 5, comment: "Easy to pair with jeans, skirts, or trousers.", date: "25-06-2025" }
     ],
     12: [
-        { user: "Ishitha", rating: 4, comment: "Beautiful detailing adds grace to the outfit.", date: "12-7-2024" },
-        { user: "Reva", rating: 4, comment: "Perfect for weddings and festive events.", date: "12-4-2025" },
-        { user: "Bhavya", rating: 5, comment: "Makes you look traditional and stylish.", date: "30-9-2025" }
+        { user: "Ishitha", rating: 4, comment: "Beautiful detailing adds grace to the outfit.", date: "30-09-2025" },
+        { user: "Reva", rating: 4, comment: "Perfect for weddings and festive events.", date: "12-04-2025" },
+        { user: "Bhavya", rating: 5, comment: "Makes you look traditional and stylish.", date: "12-07-2024" }
     ],
     13: [
-        { user: "Kumari", rating: 4, comment: "Soft pastel stripes give a cute and fresh look.", date: "24-7-2024" },
-        { user: "Nandini", rating: 5, comment: "Light and breathable, ideal for summer.", date: "5-5-2025" },
-        { user: "Siya", rating: 5, comment: "Simple design with attractive colors.", date: "10-10-2025" }
+        { user: "Kumari", rating: 4, comment: "Soft pastel stripes give a cute and fresh look.", date: "10-12-2025" },
+        { user: "Nandini", rating: 5, comment: "Light and breathable, ideal for summer.", date: "05-05-2025" },
+        { user: "Siya", rating: 5, comment: "Simple design with attractive colors.", date: "24-07-2024" }
     ],
     14: [
-        { user: "Trisha", rating: 4, comment: "Comfortable and elegant traditional wear.", date: "20-11-2024" },
-        { user: "Shruthi", rating: 4, comment: "Easy to wear and maintain.", date: "18-5-2025" },
-        { user: "Gayatri", rating: 5, comment: "Suitable for office and daily use.", date: "19-8-2025" }
+        { user: "Trisha", rating: 4, comment: "Comfortable and elegant traditional wear.", date: "19-08-2025" },
+        { user: "Shruthi", rating: 4, comment: "Easy to wear and maintain.", date: "18-05-2025" },
+        { user: "Gayatri", rating: 5, comment: "Suitable for office and daily use.", date: "20-11-2024" }
     ],
     15: [
-        { user: "Mahika", rating: 4, comment: "Smart and modern outfit with a perfect fit.", date: "12-4-2015" },
-        { user: "Jhanvi", rating: 5, comment: "Suitable for parties and formal events.", date: "3-6-2024" },
-        { user: "Anjali", rating: 5, comment: "The Jumpsuit was a little tighter than expected on the waist.", date: "12-8-2024" },
-        { user: "Aahana", rating: 4, comment: "A great alternative to dresses.", date: "26-2-2025" },
-        { user: "Pranavi", rating: 4, comment: "Gives a confident and stylish look.", date: "12-4-2025" }
+        { user: "Mahika", rating: 4, comment: "Smart and modern outfit with a perfect fit.", date: "12-04-2025" },
+        { user: "Jhanvi", rating: 5, comment: "Suitable for parties and formal events.", date: "26-02-2025" },
+        { user: "Anjali", rating: 5, comment: "The Jumpsuit was a little tighter than expected on the waist.", date: "12-08-2024" },
+        { user: "Aahana", rating: 4, comment: "A great alternative to dresses.", date: "03-06-2024" },
+        { user: "Pranavi", rating: 4, comment: "Gives a confident and stylish look.", date: "10-02-2024" }
     ],
     16: [
-        { user: "Parnika", rating: 4, comment: "Strong fabric with a comfortable fit.", date: "20-8-2024" },
-        { user: "Eesha", rating: 5, comment: "Easy to style with sneakers or flats.", date: "1-4-2025" },
-        { user: "Yamini", rating: 5, comment: "Gives a cool street-style look.", date: "17-8-2025" }
+        { user: "Parnika", rating: 4, comment: "Strong fabric with a comfortable fit.", date: "17-08-2025" },
+        { user: "Eesha", rating: 5, comment: "Easy to style with sneakers or flats.", date: "01-04-2025" },
+        { user: "Yamini", rating: 5, comment: "Gives a cool street-style look.", date: "20-08-2024" }
     ],
     17: [
-        { user: "Sharmila", rating: 4, comment: "Stylish butterfly sleeves give a feminine look.", date: "22-8-2024" },
-        { user: "Hanishka", rating: 4, comment: "Adds elegance to a simple outfit.", date: "15-1-2025" }
+        { user: "Sharmila", rating: 4, comment: "Stylish butterfly sleeves give a feminine look.", date: "22-11-2025" },
+        { user: "Hanishka", rating: 4, comment: "Adds elegance to a simple outfit.", date: "15-08-2024" }
     ],
     18: [
-        { user: "Prisha", rating: 4, comment: "Glamorous gown perfect for evening parties.", date: "12-5-2024" },
-        { user: "Lavina", rating: 4, comment: "Makes you look elegant and confident.", date: "28-8-2024" },
-        { user: "Sakshi", rating: 5, comment: "Comfortable fit with stylish design.", date: "7-3-2025" },
-        { user: "Charisma", rating: 5, comment: "Ideal for night events and functions.", date: "29-9-2025" }
+        { user: "Prisha", rating: 4, comment: "Glamorous gown perfect for evening parties.", date: "29-09-2025" },
+        { user: "Lavina", rating: 4, comment: "Makes you look elegant and confident.", date: "07-03-2025" },
+        { user: "Sakshi", rating: 5, comment: "Comfortable fit with stylish design.", date: "28-08-2024" },
+        { user: "Charisma", rating: 5, comment: "Ideal for night events and functions.", date: "12-05-2024" }
     ],
     19: [
-        { user: "Darshana", rating: 4, comment: "Fresh green color gives a soothing look.", date: "19-7-2024" },
+        { user: "Darshana", rating: 4, comment: "Fresh green color gives a soothing look.", date: "09-02-2025" },
         { user: "Mehal", rating: 5, comment: "Gives a natural and graceful appearance.", date: "28-11-2024" },
-        { user: "Akshara", rating: 5, comment: "Perfect for daytime outings.", date: "9-2-2025" }
+        { user: "Akshara", rating: 5, comment: "Perfect for daytime outings.", date: "19-07-2024" }
     ],
     20: [
-        { user: "Prisha", rating: 5, comment: "Bright pink color looks attractive and cheerful.", date: "23-11-2024" },
-        { user: "Vaidehi", rating: 4, comment: "Makes the outfit look lively and fun.", date: "20-9-2025" }
+        { user: "Prisha", rating: 5, comment: "Bright pink color looks attractive and cheerful.", date: "23-11-2025" },
+        { user: "Vaidehi", rating: 4, comment: "Makes the outfit look lively and fun.", date: "20-09-2024" }
     ]
 };
 
@@ -303,7 +303,7 @@ let feedbackList = [
         rating: 5,
         category: "Product Quality",
         comment: "Amazing quality! The dress fits perfectly and looks beautiful.",
-        date: "11/01/2025"
+        date: "11-01-2025"
     },
     {
         id: 2,
