@@ -4,7 +4,7 @@ const products = [
         id: 1, 
         name: "Cotton Saree", 
         category: "Ethnic", 
-        price: 2499, 
+        price: 1299, 
         rating: 4.5, 
         img: "https://sutisancha.com/cdn/shop/files/Untitleddesign-2024-07-20T172056.033.jpg?v=1721898476&width=2048",
         highlights: ["100% Pure Cotton", "Traditional Handloom", "6.5 meters length with blouse piece", "Easy to drape", "Machine washable"]
@@ -31,7 +31,7 @@ const products = [
         id: 4, 
         name: "Floral Summer Gown", 
         category: "Casual", 
-        price: 1299, 
+        price: 999, 
         rating: 5.0, 
         img: "https://pinkcloset.in/cdn/shop/files/Elsa-Floral_min_3.jpg?v=1714044447&width=1946",
         highlights: ["Beautiful floral print", "Lightweight breathable fabric", "Flowy maxi length", "Perfect for summer", "Easy care material"]
@@ -40,7 +40,7 @@ const products = [
         id: 5, 
         name: "Bodycon", 
         category: "Party", 
-        price: 2100, 
+        price: 1999, 
         rating: 4.1, 
         img: "https://5.imimg.com/data5/ECOM/Default/2024/10/457669649/NF/LV/AV/133434625/skzdpakr7trncmb-500x500.webp",
         highlights: ["Figure-hugging silhouette", "Premium stretch fabric", "Party & evening wear", "Sleeveless design", "Back zip closure"]
@@ -49,7 +49,7 @@ const products = [
         id: 6, 
         name: "Yellow Sunshine Frock", 
         category: "Summer", 
-        price: 850, 
+        price: 900, 
         rating: 4.6, 
         img: "https://cdn.shopaccino.com/miaminx/products/miaminx4926-copy-506205036276_m.jpeg?v=572",
         highlights: ["Bright cheerful yellow", "Cotton blend fabric", "Knee-length design", "Side pockets", "Comfortable fit"]
@@ -76,7 +76,7 @@ const products = [
         id: 9, 
         name: "Winter Woolen Dress", 
         category: "Winter", 
-        price: 1999, 
+        price: 1499, 
         rating: 3.5, 
         img: "https://www.trenbee.com/cdn/shop/files/download_26_1800x1800.webp?v=1732110662",
         highlights: ["Warm woolen blend", "Long sleeves", "Turtleneck design", "Thick winter fabric", "Cozy & stylish"]
@@ -121,7 +121,7 @@ const products = [
         id: 14, 
         name: "Kurta Set", 
         category: "Ethnic", 
-        price: 3200, 
+        price: 1300, 
         rating: 4.8, 
         img: "https://www.aravalii.com/cdn/shop/files/1_0005_DK1053_3.jpg?v=1746178387&width=2048",
         highlights: ["Complete 3-piece set", "Kurta, palazzo & dupatta", "Premium silk blend", "Intricate embroidery", "Festive & traditional"]
@@ -130,7 +130,7 @@ const products = [
         id: 15, 
         name: "Tailored JumpSuit", 
         category: "Smart", 
-        price: 1550, 
+        price: 1350, 
         rating: 4.4, 
         img: "https://img105.savana.com/goods-pic/24b3bf2d94e34bb9b6e71109562e1bfa_w540_h720_q85.webp",
         highlights: ["Professional jumpsuit", "Tailored fit", "Belt included", "Office & formal wear", "Wrinkle-resistant fabric"]
@@ -139,7 +139,7 @@ const products = [
         id: 16, 
         name: "Street Style Denim Dress", 
         category: "Casual", 
-        price: 1350, 
+        price: 1299, 
         rating: 4.2, 
         img: "https://img.kwcdn.com/product/fancy/bcc72f71-3a5d-4d5a-ae59-ea44f4141ecc.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp",
         highlights: ["Trendy denim fabric", "Button-down front", "Adjustable waist belt", "Casual street style", "Multiple pockets"]
@@ -157,7 +157,7 @@ const products = [
         id: 18, 
         name: "Sequined Night Gown", 
         category: "Evening", 
-        price: 4500, 
+        price: 3500, 
         rating: 4.9, 
         img: "https://seemagujral.com/cdn/shop/files/SG_B_2-1071.jpg?v=1694757676",
         highlights: ["Luxurious sequin work", "Evening & cocktail wear", "Figure-flattering design", "Premium quality", "Statement piece"]
