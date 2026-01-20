@@ -303,7 +303,7 @@ let feedbackList = [
         rating: 5,
         category: "Product Quality",
         comment: "Amazing quality! The dress fits perfectly and looks beautiful.",
-        date: "11-01-2025"
+        date: "11/01/2025"
     },
     {
         id: 2,
