@@ -4,7 +4,7 @@ const products = [
         id: 1, 
         name: "Cotton Saree", 
         category: "Ethnic", 
-        price: 1299, 
+        price: 1000, 
         rating: 4.5, 
         img: "https://sutisancha.com/cdn/shop/files/Untitleddesign-2024-07-20T172056.033.jpg?v=1721898476&width=2048",
         highlights: ["100% Pure Cotton", "Traditional Handloom", "6.5 meters length with blouse piece", "Easy to drape", "Machine washable"]
@@ -13,9 +13,9 @@ const products = [
         id: 2, 
         name: "Anarkali dress", 
         category: "Ethnic", 
-        price: 1199, 
+        price: 1299, 
         rating: 4.8, 
-        img: "https://desilooklifestyle.com/cdn/shop/files/WhatsAppImage2023-04-21at9.30.15AM.jpg?v=1715951580",
+        img: "https://uttamattires.com/wp-content/uploads/2025/09/1000212565.jpg",
         highlights: ["Flowy Anarkali design", "Comfortable georgette fabric", "Perfect for festive occasions", "Comes with dupatta", "Beautiful embroidery work"]
     },
     { 
@@ -31,9 +31,9 @@ const products = [
         id: 4, 
         name: "Floral Summer Gown", 
         category: "Casual", 
-        price: 999, 
+        price: 1199, 
         rating: 5.0, 
-        img: "https://pinkcloset.in/cdn/shop/files/Elsa-Floral_min_3.jpg?v=1714044447&width=1946",
+        img: "https://rimzimfashion.com/cdn/shop/files/74-2.jpg?v=1724498835",
         highlights: ["Beautiful floral print", "Lightweight breathable fabric", "Flowy maxi length", "Perfect for summer", "Easy care material"]
     },
     { 
@@ -121,9 +121,9 @@ const products = [
         id: 14, 
         name: "Kurta Set", 
         category: "Ethnic", 
-        price: 1300, 
+        price: 900, 
         rating: 4.8, 
-        img: "https://www.aravalii.com/cdn/shop/files/1_0005_DK1053_3.jpg?v=1746178387&width=2048",
+        img: "https://www.trendbuy.co.in/cdn/shop/files/embroidered-roman-silk-kurta-set-for-women-festive-wear-main.jpg?v=1767189260",
         highlights: ["Complete 3-piece set", "Kurta, palazzo & dupatta", "Premium silk blend", "Intricate embroidery", "Festive & traditional"]
     },
     { 
@@ -185,10 +185,11 @@ const products = [
 // --- APP STATE ---
 let cart = [];
 let isLoggedIn = false;
-const userName = "Anusha";
+let userName = localStorage.getItem('userName') || "Guest";
 let currentFilter = 'All';
 let selectedSize = 'M';
 let currentProductId = null;
+let buyNowItem = null; // set when "Buy Now" is used; payment is for this item only
 
 // Mock reviews data
 let reviews = {
@@ -359,8 +360,7 @@ function renderProducts(filter = 'All') {
 
     productContainer.innerHTML = filteredProducts.map(product => {
         const avgRating = calculateAverageRating(product.id);
-        const cartItem = cart.find(item => item.id === product.id);
-        const quantity = cartItem ? cartItem.quantity : 0;
+        const quantity = cart.filter(item => item.id === product.id).reduce((sum, item) => sum + item.quantity, 0);
         
         return `
             <div class="product-card" onclick="openProductDetail(${product.id})">
@@ -376,11 +376,11 @@ function renderProducts(filter = 'All') {
                         <a class="review-link" onclick="event.stopPropagation(); openReviewModal(${product.id})">See/Add Review</a>
                     </div>
                     ${quantity === 0 ? 
-                        `<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(${product.id}, 1)">Add to Cart</button>` :
+                        `<button class="add-cart-btn" onclick="event.stopPropagation(); openSizeModal(${product.id})">Add to Cart</button>` :
                         `<div class="quantity-controls">
                             <button class="quantity-btn" onclick="event.stopPropagation(); decreaseQuantity(${product.id})">−</button>
                             <span class="quantity-display">${quantity}</span>
-                            <button class="quantity-btn" onclick="event.stopPropagation(); addToCart(${product.id}, 1)">+</button>
+                            <button class="quantity-btn" onclick="event.stopPropagation(); openSizeModal(${product.id})">+</button>
                         </div>`
                     }
                 </div>
@@ -415,6 +415,10 @@ function setCategoryFilter(category) {
 
 // --- INITIALIZATION ---
 function init() {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        loadCart();
+        updateCartCount();
+    }
     setupStarRating();
     setupFeedbackStarRating(); 
     renderCategoryFilters();
@@ -438,14 +442,46 @@ const originalRouter = function(pageId) {
         return;
     }
 
+    // The profile step is only reachable right after entering an email/phone
+    if (pageId === 'profile' && !pendingLogin) {
+        router('login');
+        return;
+    }
+
+    // Leaving the payment page cancels any "Buy Now" purchase
+    if (pageId !== 'payment') buyNowItem = null;
+
+    // Can't checkout with an empty cart (unless buying a single dress via Buy Now)
+    if (pageId === 'payment' && cart.length === 0 && !buyNowItem) {
+        showToast("Please add a dress to cart to checkout", "red");
+        if (!document.getElementById('cart-page').classList.contains('active')) {
+            router('cart');
+        }
+        return;
+    }
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId + '-page').classList.add('active');
     window.scrollTo(0,0);
 
+    // Show the Home icon button everywhere except on home and login
+    document.getElementById('home-btn').style.display = (pageId === 'home' || pageId === 'login' || pageId === 'profile') ? 'none' : 'block';
+
     if(pageId === 'home') renderProducts(currentFilter);
     if(pageId === 'cart') renderCart();
     if(pageId === 'payment') {
-        document.getElementById('pay-amount').innerText = document.getElementById('final-total').innerText;
+        const summaryEl = document.getElementById('buy-now-summary');
+        if (buyNowItem) {
+            const total = buyNowItem.price * buyNowItem.quantity * 1.05; // includes 5% tax
+            document.getElementById('pay-amount').innerText = `₹${total.toFixed(2)}`;
+            summaryEl.innerText = `${buyNowItem.name} (Size: ${buyNowItem.size}) - ₹${buyNowItem.price} + 5% tax`;
+            summaryEl.style.display = 'block';
+        } else {
+            document.getElementById('pay-amount').innerText = document.getElementById('final-total').innerText;
+            summaryEl.style.display = 'none';
+        }
+        renderDeliveryInfo();
+        onPaymentMethodChange();
     }
     if(pageId === 'feedback') renderFeedbackList();
 };
@@ -469,18 +505,132 @@ window.addEventListener("load", () => {
 });
 
 // --- AUTHENTICATION ---
-function handleLogin(e) {
-    e.preventDefault();
+// Holds the verified email/phone between the login step and the profile step
+let pendingLogin = null;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function normalizePhone(value) {
+    const digits = value.replace(/[\s\-()]/g, '').replace(/^\+?91/, '');
+    return /^[6-9]\d{9}$/.test(digits) ? digits : null;
+}
+
+function showFieldError(id, message) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerText = message || '';
+    el.style.display = message ? 'block' : 'none';
+}
+
+function finishLogin(profile) {
+    userName = profile.name;
+    localStorage.setItem('userName', userName);
     isLoggedIn = true;
     localStorage.setItem('isLoggedIn', 'true');
+    pendingLogin = null;
+    loadCart();
+    updateCartCount();
     updateAuthUI();
+    renderProducts(currentFilter);
     router('home');
-    showToast("Welcome to DIVA!");
+    showToast(`Welcome to DIVA, ${userName}!`);
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const raw = document.getElementById('login-id').value.trim();
+    let type = null, id = null;
+
+    if (EMAIL_RE.test(raw)) {
+        type = 'email';
+        id = raw.toLowerCase();
+    } else if (normalizePhone(raw)) {
+        type = 'phone';
+        id = normalizePhone(raw);
+    }
+
+    if (!id) {
+        showFieldError('login-error', 'Enter a valid email or 10-digit phone number.');
+        return;
+    }
+    showFieldError('login-error', '');
+
+    // Returning customer: skip the profile step
+    try {
+        const saved = JSON.parse(localStorage.getItem('divaProfile') || 'null');
+        if (saved && saved.id === id && saved.name) {
+            finishLogin(saved);
+            return;
+        }
+    } catch (err) {}
+
+    // New customer: ask for name and a few details
+    pendingLogin = { id, type };
+    document.getElementById('profile-name').value = '';
+    document.getElementById('profile-alt').value = '';
+    document.getElementById('profile-address').value = '';
+    document.getElementById('profile-alt-label').innerText =
+        type === 'email' ? 'Phone Number (optional)' : 'Email Address (optional)';
+    document.getElementById('profile-alt').placeholder =
+        type === 'email' ? '9876543210' : 'user@example.com';
+    showFieldError('profile-name-error', '');
+    showFieldError('profile-alt-error', '');
+    router('profile');
+}
+
+function handleProfileSubmit(e) {
+    e.preventDefault();
+    if (!pendingLogin) { router('login'); return; }
+
+    const name = document.getElementById('profile-name').value.trim();
+    const alt = document.getElementById('profile-alt').value.trim();
+    const address = document.getElementById('profile-address').value.trim();
+    let ok = true;
+
+    if (name.length < 2) {
+        showFieldError('profile-name-error', 'Please enter your name.');
+        ok = false;
+    } else {
+        showFieldError('profile-name-error', '');
+    }
+
+    let altValue = '';
+    if (alt) {
+        if (pendingLogin.type === 'email') {
+            altValue = normalizePhone(alt);
+            if (!altValue) { showFieldError('profile-alt-error', 'Enter a valid 10-digit phone number.'); ok = false; }
+        } else {
+            altValue = EMAIL_RE.test(alt) ? alt.toLowerCase() : '';
+            if (!altValue) { showFieldError('profile-alt-error', 'Enter a valid email address.'); ok = false; }
+        }
+        if (altValue) showFieldError('profile-alt-error', '');
+    } else {
+        showFieldError('profile-alt-error', '');
+    }
+
+    if (!ok) return;
+
+    const profile = {
+        id: pendingLogin.id,
+        type: pendingLogin.type,
+        name,
+        email: pendingLogin.type === 'email' ? pendingLogin.id : altValue,
+        phone: pendingLogin.type === 'phone' ? pendingLogin.id : altValue,
+        address
+    };
+    try { localStorage.setItem('divaProfile', JSON.stringify(profile)); } catch (err) {}
+    finishLogin(profile);
 }
 
 function handleLogout() {
     isLoggedIn = false;
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('divaCart');
+    userName = "Guest";
+    pendingLogin = null;
+    document.querySelectorAll('#login-page form, #profile-page form').forEach(f => f.reset());
+    showFieldError('login-error', '');
     cart = [];
     document.getElementById('cart-count').innerText = 0;
     updateAuthUI();
@@ -496,7 +646,11 @@ function updateAuthUI() {
         btn.setAttribute('onclick', 'handleLogout()');
         btn.style.background = "#333";
         userDisplay.style.display = "block";
-        userDisplay.innerHTML = `Hi, <strong>${userName}</strong>`;
+        userDisplay.innerHTML = '';
+        userDisplay.append('Hi, ');
+        const nameEl = document.createElement('strong');
+        nameEl.textContent = userName;
+        userDisplay.appendChild(nameEl);
     } else {
         btn.innerText = "Login";
         btn.setAttribute('onclick', "router('login')");
@@ -506,38 +660,101 @@ function updateAuthUI() {
 }
 
 // --- CART LOGIC ---
-function addToCart(productId, quantity = 1) {
+function addToCart(productId, quantity = 1, size = selectedSize) {
     if (!isLoggedIn) {
         showToast("Please login to add items to cart!", "red");
         router('login');
         return;
     }
-    const existingItem = cart.find(item => item.id === productId);
+    // Match by both id AND size so different sizes are separate cart entries
+    const existingItem = cart.find(item => item.id === productId && item.size === size);
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
         const product = products.find(p => p.id === productId);
-        cart.push({ ...product, quantity });
+        cart.push({ ...product, quantity, size: size });
     }
     updateCartCount();
     renderProducts(currentFilter);
     showToast("Item added to cart!");
 }
 
+// --- SIZE PICKER MODAL (shown when clicking Add to Cart on the product grid) ---
+let sizeModalProductId = null;
+let sizeModalSelected = null;
+
+function openSizeModal(productId) {
+    if (!isLoggedIn) {
+        showToast("Please login to add items to cart!", "red");
+        router('login');
+        return;
+    }
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    sizeModalProductId = productId;
+    sizeModalSelected = null;
+    document.getElementById('size-modal-product').innerText = `${product.name} - ₹${product.price}`;
+    document.querySelectorAll('#size-modal-options .size-option').forEach(b => b.classList.remove('selected'));
+    document.getElementById('size-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function pickModalSize(button, size) {
+    document.querySelectorAll('#size-modal-options .size-option').forEach(b => b.classList.remove('selected'));
+    button.classList.add('selected');
+    sizeModalSelected = size;
+}
+
+function closeSizeModal(event) {
+    if (!event || event.target.id === 'size-modal' || event.target.classList.contains('close-btn')) {
+        document.getElementById('size-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        sizeModalProductId = null;
+        sizeModalSelected = null;
+    }
+}
+
+function confirmSizeAdd() {
+    if (!sizeModalSelected) {
+        showToast("Please choose a size first!", "red");
+        return;
+    }
+    const id = sizeModalProductId;
+    const size = sizeModalSelected;
+    const product = products.find(p => p.id === id);
+    closeSizeModal();
+    addToCart(id, 1, size);
+    showToast(`Added ${product.name} (Size: ${size}) to cart!`);
+}
+
 function decreaseQuantity(productId) {
-    const existingItem = cart.find(item => item.id === productId);
+    // For the product grid buttons, find any cart entry for this product
+    const existingItem = [...cart].reverse().find(item => item.id === productId);
     if (existingItem) {
         existingItem.quantity -= 1;
         if (existingItem.quantity <= 0) {
-            removeFromCart(productId);
-        } else {
-            updateCartCount();
-            renderProducts(currentFilter);
+            cart = cart.filter(item => !(item.id === productId && item.size === existingItem.size));
         }
+        updateCartCount();
+        renderProducts(currentFilter);
+    }
+}
+
+function saveCart() {
+    try { localStorage.setItem('divaCart', JSON.stringify(cart)); } catch (e) {}
+}
+
+function loadCart() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('divaCart') || '[]');
+        cart = Array.isArray(saved) ? saved : [];
+    } catch (e) {
+        cart = [];
     }
 }
 
 function updateCartCount() {
+    saveCart();
     const count = cart.reduce((total, item) => total + item.quantity, 0);
     document.getElementById('cart-count').innerText = count;
 }
@@ -569,14 +786,16 @@ function renderCart() {
                         <div>
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-category">${item.category}</div>
+                            <!-- ✅ Display selected size -->
+                            <div class="cart-item-size">Size: ${item.size || 'M'}</div>
                         </div>
                         <div class="cart-item-price">₹${itemTotal}</div>
                     </div>
                     <div class="cart-quantity-controls">
-                        <button class="cart-qty-btn" onclick="updateCartQuantity(${item.id}, -1)">−</button>
+                        <button class="cart-qty-btn" onclick="updateCartQuantity(${item.id}, -1, '${item.size}')">−</button>
                         <span class="quantity-display">${item.quantity}</span>
-                        <button class="cart-qty-btn" onclick="updateCartQuantity(${item.id}, 1)">+</button>
-                        <span class="remove-btn" onclick="removeFromCart(${item.id})">Remove</span>
+                        <button class="cart-qty-btn" onclick="updateCartQuantity(${item.id}, 1, '${item.size}')">+</button>
+                        <span class="remove-btn" onclick="removeFromCart(${item.id}, '${item.size}')">Remove</span>
                     </div>
                 </div>
             </div>
@@ -592,22 +811,23 @@ function renderCart() {
     totalEl.innerText = `₹${finalTotal.toFixed(2)}`;
 }
 
-function updateCartQuantity(productId, change) {
-    const existingItem = cart.find(item => item.id === productId);
+// ✅ Updated to match by id + size
+function updateCartQuantity(productId, change, size) {
+    const existingItem = cart.find(item => item.id === productId && item.size === size);
     if (existingItem) {
         existingItem.quantity += change;
         if (existingItem.quantity <= 0) {
-            removeFromCart(productId);
-        } else {
-            updateCartCount();
-            renderCart();
-            renderProducts(currentFilter);
+            cart = cart.filter(item => !(item.id === productId && item.size === size));
         }
+        updateCartCount();
+        renderCart();
+        renderProducts(currentFilter);
     }
 }
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+// ✅ Updated to match by id + size
+function removeFromCart(productId, size) {
+    cart = cart.filter(item => !(item.id === productId && item.size === size));
     updateCartCount();
     renderCart();
     renderProducts(currentFilter);
@@ -615,12 +835,130 @@ function removeFromCart(productId) {
 }
 
 // --- PAYMENT LOGIC ---
+function proceedToCheckout() {
+    buyNowItem = null; // normal checkout uses the whole cart
+    router('payment');
+}
+
+function cancelPayment() {
+    router(buyNowItem ? 'home' : 'cart');
+}
+
+function onPaymentMethodChange() {
+    const method = document.querySelector('input[name="payment"]:checked').value;
+    document.getElementById('upi-apps').style.display = method === 'upi' ? 'block' : 'none';
+}
+
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'upi-app') {
+        document.getElementById('upi-id-input').style.display = e.target.value === 'Other UPI ID' ? 'block' : 'none';
+    }
+});
+
 function processPayment() {
-    cart = [];
+    const p = getProfile();
+    if (!p.address || !(p.phone && normalizePhone(p.phone))) {
+        showToast("Please add your delivery address and contact number", "red");
+        openAddressModal();
+        return;
+    }
+    const method = document.querySelector('input[name="payment"]:checked').value;
+    let appName = '';
+    if (method === 'upi') {
+        const chosen = document.querySelector('input[name="upi-app"]:checked');
+        if (!chosen) {
+            showToast("Please choose a UPI app (PhonePe, Google Pay...)", "red");
+            return;
+        }
+        if (chosen.value === 'Other UPI ID') {
+            const upiId = document.getElementById('upi-id-input').value.trim();
+            if (!/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(upiId)) {
+                showToast("Please enter a valid UPI ID (e.g. name@bank)", "red");
+                return;
+            }
+        }
+        appName = chosen.value;
+    }
+    if (buyNowItem) {
+        // Buy Now: only this dress was purchased, keep the rest of the cart
+        buyNowItem = null;
+    } else {
+        cart = [];
+    }
     updateCartCount();
     renderProducts(currentFilter);
     router('home');
-    showToast("Payment successful! Thank you for shopping with us.", "green");
+    showToast(appName ? `Payment successful via ${appName}! Thank you for shopping with us.` : "Payment successful! Thank you for shopping with us.", "green");
+}
+
+// --- DELIVERY ADDRESS (checkout) ---
+function getProfile() {
+    try { return JSON.parse(localStorage.getItem('divaProfile') || '{}') || {}; }
+    catch (e) { return {}; }
+}
+
+function renderDeliveryInfo() {
+    const p = getProfile();
+    const nameEl = document.getElementById('delivery-name');
+    const addrEl = document.getElementById('delivery-address');
+    const phoneEl = document.getElementById('delivery-phone');
+    const btn = document.getElementById('change-address-btn');
+
+    nameEl.textContent = p.deliveryName || p.name || userName;
+    if (p.address) {
+        addrEl.className = 'delivery-address';
+        addrEl.textContent = p.address;
+        btn.textContent = 'Change';
+    } else {
+        addrEl.className = 'delivery-empty';
+        addrEl.textContent = 'No delivery address added yet.';
+        btn.textContent = 'Add address';
+    }
+    phoneEl.textContent = p.phone ? `📞 ${p.phone}` : '📞 No contact number added';
+}
+
+function openAddressModal() {
+    const p = getProfile();
+    document.getElementById('addr-name').value = p.deliveryName || p.name || '';
+    document.getElementById('addr-phone').value = p.phone || '';
+    document.getElementById('addr-address').value = p.address || '';
+    ['addr-name-error', 'addr-phone-error', 'addr-address-error'].forEach(id => showFieldError(id, ''));
+    document.getElementById('address-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddressModal(event) {
+    if (!event || event.target.id === 'address-modal' || event.target.classList.contains('close-btn')) {
+        document.getElementById('address-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function saveAddress(e) {
+    e.preventDefault();
+    const name = document.getElementById('addr-name').value.trim();
+    const phoneRaw = document.getElementById('addr-phone').value.trim();
+    const address = document.getElementById('addr-address').value.trim();
+    const phone = normalizePhone(phoneRaw);
+    let ok = true;
+
+    if (name.length < 2) { showFieldError('addr-name-error', 'Please enter the receiver\'s name.'); ok = false; }
+    else showFieldError('addr-name-error', '');
+    if (!phone) { showFieldError('addr-phone-error', 'Enter a valid 10-digit phone number.'); ok = false; }
+    else showFieldError('addr-phone-error', '');
+    if (address.length < 10) { showFieldError('addr-address-error', 'Please enter your full address.'); ok = false; }
+    else showFieldError('addr-address-error', '');
+    if (!ok) return;
+
+    const p = getProfile();
+    p.deliveryName = name;
+    p.phone = phone;
+    p.address = address;
+    try { localStorage.setItem('divaProfile', JSON.stringify(p)); } catch (err) {}
+
+    closeAddressModal();
+    renderDeliveryInfo();
+    showToast("Delivery address saved!");
 }
 
 // --- TOAST NOTIFICATION ---
@@ -804,8 +1142,17 @@ function openProductDetail(productId) {
     };
 
     document.getElementById('detail-add-cart').onclick = function() {
-        addToCart(productId, 1);
-        showToast(`Added ${product.name} (Size: ${selectedSize}) to cart!`);
+        if (!isLoggedIn) {
+            closeProductDetail();
+            showToast("Please login to add items to cart!", "red");
+            router('login');
+            return;
+        }
+        const size = selectedSize;
+        addToCart(productId, 1, size);
+        closeProductDetail();
+        router('home');
+        showToast(`Added ${product.name} (Size: ${size}) to cart!`);
     };
 
     document.getElementById('detail-buy-now').onclick = function() {
@@ -815,13 +1162,15 @@ function openProductDetail(productId) {
             router('login');
             return;
         }
-        addToCart(productId, 1);
+        // Buy only this dress: skip the cart and go straight to payment
+        buyNowItem = { ...product, quantity: 1, size: selectedSize };
         closeProductDetail();
-        router('cart');
+        router('payment');
     };
 
+    // ✅ Reset size to M when opening modal
     selectedSize = 'M';
-    document.querySelectorAll('.size-option').forEach(btn => {
+    document.querySelectorAll('#size-options .size-option').forEach(btn => {
         btn.classList.remove('selected');
         if (btn.innerText === 'M') btn.classList.add('selected');
     });
@@ -839,7 +1188,7 @@ function closeProductDetail(event) {
 }
 
 function selectSize(button, size) {
-    document.querySelectorAll('.size-option').forEach(btn => btn.classList.remove('selected'));
+    document.querySelectorAll('#size-options .size-option').forEach(btn => btn.classList.remove('selected'));
     button.classList.add('selected');
     selectedSize = size;
 }
@@ -906,12 +1255,12 @@ function validateFeedbackForm() {
     }
     
     const phone = document.getElementById('feedback-phone').value.trim();
-if (!/^[6-9]\d{9}$/.test(phone)) {
-    showError('phone-error', 'feedback-phone');
-    isValid = false;
-} else {
-    hideError('phone-error', 'feedback-phone');
-}
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+        showError('phone-error', 'feedback-phone');
+        isValid = false;
+    } else {
+        hideError('phone-error', 'feedback-phone');
+    }
 
     const rating = parseInt(document.getElementById('feedback-rating').value);
     if (rating === 0) {

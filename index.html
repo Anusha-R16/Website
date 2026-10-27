@@ -12,7 +12,8 @@
     <header>
         <div class="logo" onclick="router('home')">DIVA</div>
         <div class="nav-links">
-            <div id="user-display" style="display: none; font-size: 0.9rem;">Hi, Anusha</div>
+            <button id="home-btn" class="home-btn" onclick="router('home')" title="Back to Home" style="display: none;">Home</button>
+            <div id="user-display" style="display: none; font-size: 0.9rem;"></div>
             <button id="auth-btn" class="auth-btn" onclick="router('login')">Login</button>
             <button class="feedback-btn" onclick="router('feedback')">Feedback</button>
             <div class="cart-icon" onclick="router('cart')">
@@ -28,18 +29,44 @@
         <div class="login-wrapper">
             <div class="login-card">
                 <h2>Welcome Back</h2>
-                <p>Login to discover the latest fashion</p>
+                <p>Login with your email or phone number</p>
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" placeholder="user@example.com" required>
+                        <label>Email or Phone Number</label>
+                        <input type="text" id="login-id" placeholder="user@example.com or 9876543210" autocomplete="off" required>
+                        <small id="login-error" style="color:#d32f2f; display:none; margin-top:5px;"></small>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" placeholder="••••••••" required>
+                        <input type="password" placeholder="••••••••" autocomplete="new-password" required>
                     </div>
                     <button type="submit" class="checkout-btn">LOGIN</button>
-                    <p style="margin-top: 15px; font-size: 0.8rem;">New here? Create account</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-page" class="page">
+        <div class="login-wrapper" style="height:auto; min-height:80vh; padding:30px 15px;">
+            <div class="login-card">
+                <h2>Tell us about you</h2>
+                <p>Just a few details to personalise your experience</p>
+                <form onsubmit="handleProfileSubmit(event)" novalidate>
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <input type="text" id="profile-name" placeholder="e.g. Anusha" autocomplete="name">
+                        <small id="profile-name-error" style="color:#d32f2f; display:none; margin-top:5px;"></small>
+                    </div>
+                    <div class="form-group">
+                        <label id="profile-alt-label">Phone Number (optional)</label>
+                        <input type="text" id="profile-alt" autocomplete="off">
+                        <small id="profile-alt-error" style="color:#d32f2f; display:none; margin-top:5px;"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address (optional)</label>
+                        <textarea id="profile-address" rows="3" placeholder="House no, street, city, pincode"></textarea>
+                    </div>
+                    <button type="submit" class="checkout-btn">CONTINUE</button>
                 </form>
             </div>
         </div>
@@ -87,7 +114,7 @@
                         <span>Order Total</span>
                         <span id="final-total" style="color: var(--primary);">₹0</span>
                     </div>
-                    <button class="checkout-btn" onclick="router('payment')">PROCEED TO CHECKOUT</button>
+                    <button class="checkout-btn" onclick="proceedToCheckout()">PROCEED TO CHECKOUT</button>
                 </div>
             </div>
         </div>
@@ -97,18 +124,64 @@
         <div class="container">
             <h2 class="section-title" style="text-align: center;">Secure Payment</h2>
             <div class="payment-card">
+                <div class="delivery-box" id="delivery-box">
+                    <div class="delivery-box-head">
+                        <span class="delivery-title">📍 Delivering to</span>
+                        <button type="button" class="change-address-btn" id="change-address-btn" onclick="openAddressModal()">Change</button>
+                    </div>
+                    <div class="delivery-name" id="delivery-name"></div>
+                    <div class="delivery-address" id="delivery-address"></div>
+                    <div class="delivery-phone" id="delivery-phone"></div>
+                </div>
+
                 <p style="margin-bottom: 20px;">Choose payment method for <b id="pay-amount">₹0</b></p>
+                <div id="buy-now-summary" style="display:none; margin-bottom: 20px; padding: 10px 12px; background: #fff7f9; border-left: 3px solid var(--primary); border-radius: 6px; font-size: 0.9rem;"></div>
                 
                 <label class="pay-option">
-                    <input type="radio" name="payment" value="upi" checked>
+                    <input type="radio" name="payment" value="upi" checked onchange="onPaymentMethodChange()">
                     <div>
                         <strong>UPI / Wallets</strong><br>
                         <small>GooglePay, PhonePe, Paytm</small>
                     </div>
                 </label>
 
+                <div class="upi-apps" id="upi-apps">
+                    <p class="upi-apps-title">Choose your UPI app</p>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="PhonePe">
+                        <span class="upi-logo" style="background:#5f259f;">Pe</span>
+                        <span>PhonePe</span>
+                    </label>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="Google Pay">
+                        <span class="upi-logo" style="background:#4285f4;">G</span>
+                        <span>Google Pay</span>
+                    </label>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="Paytm">
+                        <span class="upi-logo" style="background:#00baf2;">P</span>
+                        <span>Paytm</span>
+                    </label>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="Amazon Pay">
+                        <span class="upi-logo" style="background:#ff9900;">a</span>
+                        <span>Amazon Pay</span>
+                    </label>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="BHIM">
+                        <span class="upi-logo" style="background:#00796b;">B</span>
+                        <span>BHIM</span>
+                    </label>
+                    <label class="upi-app">
+                        <input type="radio" name="upi-app" value="Other UPI ID">
+                        <span class="upi-logo" style="background:#666;">@</span>
+                        <span>Enter UPI ID</span>
+                    </label>
+                    <input type="text" id="upi-id-input" class="upi-id-input" placeholder="yourname@bank" style="display:none;">
+                </div>
+
                 <label class="pay-option">
-                    <input type="radio" name="payment" value="card">
+                    <input type="radio" name="payment" value="card" onchange="onPaymentMethodChange()">
                     <div>
                         <strong>Credit / Debit Card</strong><br>
                         <small>Visa, Mastercard, Rupay</small>
@@ -116,7 +189,7 @@
                 </label>
 
                 <label class="pay-option">
-                    <input type="radio" name="payment" value="cod">
+                    <input type="radio" name="payment" value="cod" onchange="onPaymentMethodChange()">
                     <div>
                         <strong>Cash on Delivery</strong><br>
                         <small>Pay at your doorstep</small>
@@ -124,7 +197,7 @@
                 </label>
 
                 <button class="checkout-btn" onclick="processPayment()">PAY SECURELY</button>
-                <button onclick="router('cart')" style="width: 100%; background: transparent; border: none; margin-top: 10px; cursor: pointer;">Cancel</button>
+                <button onclick="cancelPayment()" style="width: 100%; background: transparent; border: none; margin-top: 10px; cursor: pointer;">Cancel</button>
             </div>
         </div>
     </div>
@@ -132,6 +205,7 @@
     <div id="feedback-page" class="page">
         <div class="container">
             <div class="feedback-card">
+                <button class="back-home-link" onclick="router('home')">🏠 ← Back to Home</button>
                 <h2>We Value Your Feedback</h2>
                 <p>Help us improve your shopping experience. Share your thoughts!</p>
                 
@@ -220,6 +294,49 @@
             <h3 style="font-size: 1.2rem; margin-top: 30px; margin-bottom: 10px;">Customer Reviews (<span id="review-count">0</span>)</h3>
             <div id="reviews-list-container" class="review-list">
             </div>
+        </div>
+    </div>
+
+    <div id="address-modal" class="size-modal" onclick="closeAddressModal(event)">
+        <div class="size-modal-content" onclick="event.stopPropagation()" style="margin-top:8vh; max-height:84vh; overflow-y:auto;">
+            <span class="close-btn" onclick="closeAddressModal()">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 5px;">Delivery Address</h2>
+            <p style="margin-bottom: 20px; color: #666; font-size:0.9rem;">Where should we deliver your order?</p>
+            <form onsubmit="saveAddress(event)" novalidate>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="addr-name" autocomplete="name">
+                    <small id="addr-name-error" class="field-error"></small>
+                </div>
+                <div class="form-group">
+                    <label>Contact Number *</label>
+                    <input type="tel" id="addr-phone" placeholder="9876543210" autocomplete="tel">
+                    <small id="addr-phone-error" class="field-error"></small>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <textarea id="addr-address" rows="3" placeholder="House no, street, area, city, pincode"></textarea>
+                    <small id="addr-address-error" class="field-error"></small>
+                </div>
+                <button type="submit" class="checkout-btn">SAVE ADDRESS</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="size-modal" class="size-modal" onclick="closeSizeModal(event)">
+        <div class="size-modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeSizeModal()">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 5px;">Please choose a size</h2>
+            <p id="size-modal-product" style="margin-bottom: 20px; color: #666;"></p>
+            <div class="size-options" id="size-modal-options">
+                <button class="size-option" onclick="pickModalSize(this, 'XS')">XS</button>
+                <button class="size-option" onclick="pickModalSize(this, 'S')">S</button>
+                <button class="size-option" onclick="pickModalSize(this, 'M')">M</button>
+                <button class="size-option" onclick="pickModalSize(this, 'L')">L</button>
+                <button class="size-option" onclick="pickModalSize(this, 'XL')">XL</button>
+                <button class="size-option" onclick="pickModalSize(this, 'XXL')">XXL</button>
+            </div>
+            <button class="checkout-btn" onclick="confirmSizeAdd()">ADD TO CART</button>
         </div>
     </div>
 
