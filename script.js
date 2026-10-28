@@ -327,6 +327,38 @@ let feedbackList = [
 ];
 
 // --- UTILITY FUNCTIONS ---
+// Turns special characters into plain text so user input can't run as HTML
+function esc(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Save reviews and feedback so they stay after a refresh
+function saveReviewsAndFeedback() {
+    try {
+        localStorage.setItem('divaReviews', JSON.stringify(reviews));
+        localStorage.setItem('divaFeedback', JSON.stringify(feedbackList));
+    } catch (err) {}
+}
+
+// Load saved reviews and feedback (if any) and update product ratings
+function loadReviewsAndFeedback() {
+    try {
+        const savedReviews = JSON.parse(localStorage.getItem('divaReviews') || 'null');
+        const savedFeedback = JSON.parse(localStorage.getItem('divaFeedback') || 'null');
+        if (savedReviews) reviews = savedReviews;
+        if (Array.isArray(savedFeedback)) feedbackList = savedFeedback;
+    } catch (err) {}
+    products.forEach(p => {
+        const avg = calculateAverageRating(p.id);
+        if (avg > 0) p.rating = avg;
+    });
+}
+
 function calculateAverageRating(productId) {
     const productReviews = reviews[productId] || [];
     if (productReviews.length === 0) return 0;
@@ -415,6 +447,7 @@ function setCategoryFilter(category) {
 
 // --- INITIALIZATION ---
 function init() {
+    loadReviewsAndFeedback();
     if (localStorage.getItem('isLoggedIn') === 'true') {
         loadCart();
         updateCartCount();
@@ -1086,6 +1119,7 @@ function submitReview(e) {
         products[productIndex].rating = calculateAverageRating(productId);
     }
 
+    saveReviewsAndFeedback();
     renderReviews(productId);
     renderProducts(currentFilter);
     
@@ -1110,11 +1144,11 @@ function renderReviews(productId) {
     reviewListContainer.innerHTML = productReviews.map(r => `
         <div class="review-item">
             <div class="review-meta">
-                <strong>${r.user}</strong>
-                <span>${r.date}</span>
+                <strong>${esc(r.user)}</strong>
+                <span>${esc(r.date)}</span>
             </div>
             ${renderRatingStars(r.rating)}
-            <p>${r.comment}</p>
+            <p>${esc(r.comment)}</p>
         </div>
     `).join('');
 }
@@ -1134,7 +1168,7 @@ function openProductDetail(productId) {
     document.getElementById('detail-product-rating').innerText = `★ ${avgRating.toFixed(1)}`;
     
     const highlightsList = document.getElementById('highlights-list');
-    highlightsList.innerHTML = product.highlights.map(h => `<li>${h}</li>`).join('');
+    highlightsList.innerHTML = product.highlights.map(h => `<li>${esc(h)}</li>`).join('');
 
     document.getElementById('detail-review-link').onclick = function() {
         closeProductDetail();
@@ -1308,6 +1342,7 @@ function submitFeedback(e) {
     };
 
     feedbackList.unshift(newFeedback);
+    saveReviewsAndFeedback();
 
     document.getElementById('feedback-form').reset();
     document.getElementById('feedback-rating').value = 0;
@@ -1333,12 +1368,12 @@ function renderFeedbackList() {
     container.innerHTML = feedbackList.map(f => `
         <div class="feedback-item">
             <div class="feedback-header">
-                <span class="feedback-user">${f.name}</span>
-                <span class="feedback-date">${f.date}</span>
+                <span class="feedback-user">${esc(f.name)}</span>
+                <span class="feedback-date">${esc(f.date)}</span>
             </div>
             <div class="feedback-rating">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
-            <div class="feedback-category">Category: ${f.category}</div>
-            <div class="feedback-comment">${f.comment}</div>
+            <div class="feedback-category">Category: ${esc(f.category)}</div>
+            <div class="feedback-comment">${esc(f.comment)}</div>
         </div>
     `).join('');
 }
